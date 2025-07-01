@@ -1,50 +1,55 @@
 # Agentic RAG Medical Assistant
 
-Asistente médico inteligente basado en un modelo LLaMA 3.1 8B fine-tuned, potenciado con un pipeline RAG con agentes, para consultas clínicas, documentación médica y recomendaciones personalizadas.
+Asistente médico basado en lenguaje natural para consultas clínicas simuladas. Utiliza una arquitectura modular que integra FHIR, procesamiento HL7 y un modelo LLM multilingüe con un sistema de agentes básicos.
 
-## Características
+## ✅ ¿Qué incluye esta versión?
 
-- RAG con más de 20 fuentes médicas: recuperación de información médica actualizada y relevante.
-- LLM Fine-tuned: Modelo LLaMA 3.1 (8B) entrenado con LoRA y acelerado con Unsloth 4-bit, logrando un ROUGE1 score de 0.29.
-- Integración FHIR: Soporte para lectura de historiales clínicos simulados desde servidores FHIR R4.
-- Procesamiento HL7: Soporte para parsing de mensajes del sistema de laboratorio (formato HL7 v2).
-- Análisis de síntomas: El agente genera códigos ICD-10 sugeridos para síntomas ingresados en lenguaje natural.
-- Generación multilingüe: El modelo detecta el idioma (español/inglés) y responde automáticamente en el idioma correspondiente.
-- Agente coordinador clínico: `OncologyCoordinator` integra todas las fuentes (FHIR, HL7, FDA, RAG, LLM).
-- Enrutamiento inteligente: Detecta si una consulta es médica y utiliza RAG para salud, Wikipedia para otras consultas.
-- Selección de paciente: Menú desplegable en la interfaz para elegir entre múltiples pacientes simulados.
-- Interfaz rápida: Chat web con FastAPI + Bootstrap, con latencia reducida.
+- Interfaz web funcional con FastAPI + Bootstrap.
+- Selector de paciente desde un menú desplegable.
+- Endpoint `/chat` funcional que enruta preguntas al LLM.
+- Implementación básica del agente `OncologyCoordinator` con integración de:
+  - FHIR simulado (`patient_context`)
+  - Parsing de mensajes HL7 simulados (`hl7_context`)
+  - Análisis de síntomas básicos (`symptoms_analysis`)
+- Generación de respuestas automáticas en español o inglés, según el idioma de la pregunta.
+- LLM conectado vía Ollama u otro proveedor local.
 
-## Tech Stack
+## ⚠️ Limitaciones actuales
 
-| Componente   | Tecnología                              |
-|--------------|------------------------------------------|
-| LLM          | LLaMA 3.1 8B + LoRA + GGUF + Unsloth     |
-| RAG          | LangChain + ChromaDB                    |
-| EHR          | FHIR R4 API (fhir.resources, httpx)      |
-| HL7          | hl7.parser (stream de laboratorio)       |
-| Interacciones| OpenFDA API (limitada a 10 req/min)      |
-| Backend      | FastAPI (endpoints asíncronos + Web UI)  |
-| Frontend     | Bootstrap + JS Fetch API                 |
-| Coordinador  | `OncologyCoordinator()` (agente maestro) |
-| Inference    | Ollama + Unsloth 4-bit                   |
+- No se finalizó la demo completamente integrada (flujo clínico automático aún incompleto).
+- Algunas funcionalidades (ej. FDA API o análisis profundo de interacciones) están simuladas o pendientes de integración.
+- El sistema RAG funciona sobre documentos locales pero no se completó la capa de recuperación multifuente ni embeddings finales.
+- Algunos errores aún presentes en el flujo completo (respuesta inconsistente del LLM o múltiples salidas por mensaje).
 
-## Instalación Rápida
+## Tech Stack usado
+
+| Componente   | Tecnología                            |
+|--------------|----------------------------------------|
+| LLM          | Ollama local (modelo tipo LLaMA)       |
+| Agentes      | `OncologyCoordinator()` coordinador clínico |
+| EHR Simulado | FHIR R4 (`fhir.resources`)             |
+| HL7 Parsing  | `hl7.parser` en modo lectura básica     |
+| Backend API  | FastAPI                               |
+| Frontend     | HTML + Bootstrap + JavaScript (Fetch) |
+
+##  Próximos pasos
+Finalizar integración completa entre agentes y fuentes de datos estructurados.
+
+Implementar validación de síntomas con ICD-10 desde entrada libre.
+
+Mejorar la precisión multilingüe del LLM para respuestas más naturales.
+
+Agregar manejo de contexto clínico longitudinal y resumen automático.
+
+## Instalación Básica
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/SathvikNayak123/Agentic-RAG.git
-cd Agentic-RAG
+# Clonar este repositorio
+git clone https://github.com/Joselyn15/ClinicalAsssistant.git
+cd ClinicalAsssistant
 
 # Instalar dependencias
 pip install -r requirements.txt
 
-# Descargar el modelo
-ollama pull hf.co/sathvik123/llama3-ChatDoc
-
-# Ingestar documentos y generar embeddings
-python ingest.py
-
-# Iniciar la aplicación
-cd ClinicalAssistant
+# Iniciar el servidor
 uvicorn app:app --reload
