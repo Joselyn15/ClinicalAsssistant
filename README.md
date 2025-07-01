@@ -1,48 +1,50 @@
-# 🧠 Agentic RAG Medical Assistant
+# Agentic RAG Medical Assistant
 
-Asistente médico inteligente basado en un modelo **LLaMA 3.1 8B fine-tuned**, potenciado con un pipeline **RAG con agentes** para consultas clínicas, documentación médica y recomendaciones personalizadas.
+Asistente médico inteligente basado en un modelo LLaMA 3.1 8B fine-tuned, potenciado con un pipeline RAG con agentes, para consultas clínicas, documentación médica y recomendaciones personalizadas.
 
----
+## Características
 
-## 🔍 Características
+- RAG con más de 20 fuentes médicas: recuperación de información médica actualizada y relevante.
+- LLM Fine-tuned: Modelo LLaMA 3.1 (8B) entrenado con LoRA y acelerado con Unsloth 4-bit, logrando un ROUGE1 score de 0.29.
+- Integración FHIR: Soporte para lectura de historiales clínicos simulados desde servidores FHIR R4.
+- Procesamiento HL7: Soporte para parsing de mensajes del sistema de laboratorio (formato HL7 v2).
+- Análisis de síntomas: El agente genera códigos ICD-10 sugeridos para síntomas ingresados en lenguaje natural.
+- Generación multilingüe: El modelo detecta el idioma (español/inglés) y responde automáticamente en el idioma correspondiente.
+- Agente coordinador clínico: `OncologyCoordinator` integra todas las fuentes (FHIR, HL7, FDA, RAG, LLM).
+- Enrutamiento inteligente: Detecta si una consulta es médica y utiliza RAG para salud, Wikipedia para otras consultas.
+- Selección de paciente: Menú desplegable en la interfaz para elegir entre múltiples pacientes simulados.
+- Interfaz rápida: Chat web con FastAPI + Bootstrap, con latencia reducida.
 
-- **📚 RAG con 20+ fuentes médicas**: Recuperación de información médica actualizada y relevante.
-- **🧠 LLM Fine-tuned**: Modelo LLaMA 3.1 (8B) entrenado con **LoRA** y acelerado con **Unsloth 4-bit**, logrando un **ROUGE1 score de 0.29**.
-- **🗂️ Integración FHIR**: Soporte para lectura de historiales clínicos desde servidores **FHIR R4**, compatible con sistemas EHR.
-- **🤖 Agentes inteligentes**:
-  - Detectan si una consulta es médica o no.
-  - Enrutan automáticamente: RAG para consultas clínicas, Wikipedia para otras.
-- **⚡ Interfaz rápida**: Chat asíncrono con **FastAPI**, latencia reducida en un **40%**.
+## Tech Stack
 
----
+| Componente   | Tecnología                              |
+|--------------|------------------------------------------|
+| LLM          | LLaMA 3.1 8B + LoRA + GGUF + Unsloth     |
+| RAG          | LangChain + ChromaDB                    |
+| EHR          | FHIR R4 API (fhir.resources, httpx)      |
+| HL7          | hl7.parser (stream de laboratorio)       |
+| Interacciones| OpenFDA API (limitada a 10 req/min)      |
+| Backend      | FastAPI (endpoints asíncronos + Web UI)  |
+| Frontend     | Bootstrap + JS Fetch API                 |
+| Coordinador  | `OncologyCoordinator()` (agente maestro) |
+| Inference    | Ollama + Unsloth 4-bit                   |
 
-## 🧰 Tech Stack
+## Instalación Rápida
 
-| Componente     | Tecnología                                        |
-|----------------|---------------------------------------------------|
-| 🔗 LLM         | LLaMA 3.1 8B + PEFT (LoRA) + GGUF (HF)            |
-| 🧪 RAG         | LangChain + ChromaDB                              |
-| 🏥 EHR         | FHIR R4 API (mediante `fhir.resources`, `httpx`)  |
-| 🌐 Backend     | FastAPI (asynchronous API + Web UI)               |
-| 📦 Inference   | Ollama + Unsloth                                   |
+```bash
+# Clonar el repositorio
+git clone https://github.com/SathvikNayak123/Agentic-RAG.git
+cd Agentic-RAG
 
----
-
-## ⚙️ Instalación Rápida
-
-1. **Clona el repositorio**
-   ```bash
-   git clone https://github.com/SathvikNayak123/Agentic-RAG.git
-   cd Agentic-RAG
-
-2. **Instala dependencias**
+# Instalar dependencias
 pip install -r requirements.txt
 
-3. **Descarga el modelo**
+# Descargar el modelo
 ollama pull hf.co/sathvik123/llama3-ChatDoc
 
-4. **Carga documentos y genera embeddings**
+# Ingestar documentos y generar embeddings
 python ingest.py
 
-5. **Inicia la app**
+# Iniciar la aplicación
+cd ClinicalAssistant
 uvicorn app:app --reload
